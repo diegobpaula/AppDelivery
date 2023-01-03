@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Form_Cadastro">
+    
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/fotoUsuario"
+        android:layout_width="200dp"
+        android:layout_height="150dp"
+        android:src="@color/black"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
+        />
+    
+    <Button
+        android:id="@+id/bt_selecionarFoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Selecione uma foto."
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:backgroundTint="@android:color/transparent"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        />
+
+    <EditText
+        android:id="@+id/edit_nome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/edit_text_shape"
+        android:hint="Nome"
+        android:inputType="text"
+        android:maxLines="1"
+        android:padding="15dp" />
+
+    <EditText
+        android:id="@+id/edit_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/edit_text_shape"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
+        android:maxLines="1"
+        android:padding="15dp" />
+
+    <EditText
+        android:id="@+id/edit_senha"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/edit_text_shape"
+        android:hint="Senha"
+        android:inputType="numberPassword"
+        android:maxLines="1"
+        android:padding="15dp" />
+
+    <TextView
+        android:id="@+id/txt_mensagemErro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text=""
+        android:textColor="@color/red"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/bt_cadastrar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:padding="15dp"
+        android:text="Cadastrar"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:enabled="false"
+        android:textColor="@color/white"
+        />
+</LinearLayout>
+</androidx.core.widget.NestedScrollView>
