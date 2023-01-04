@@ -30,10 +30,14 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -46,6 +50,7 @@ public class Form_Cadastro extends AppCompatActivity {
     private TextView txt_mensagemErro;
 
     private Uri mSelecionarUri;
+    private String usuarioID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,14 +77,14 @@ public class Form_Cadastro extends AppCompatActivity {
         });
     }
 
-    public void CadastrarUsuario(View view){
+    public void CadastrarUsuario(View view) {
         String email = edit_email.getText().toString();
         String senha = edit_senha.getText().toString();
 
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, senha).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()){
+                if (task.isSuccessful()) {
                     SalvarDadosUsuario();
                     Snackbar snackbar = Snackbar.make(view, "Cadastro realizado com sucesso!", Snackbar.LENGTH_INDEFINITE)
                             .setAction("OK", new View.OnClickListener() {
@@ -100,9 +105,9 @@ public class Form_Cadastro extends AppCompatActivity {
                         erro = "E-mail inválido!";
                     } catch (FirebaseAuthUserCollisionException e) {
                         erro = "Está conta já foi cadastrada!";
-                    } catch (FirebaseNetworkException e){
+                    } catch (FirebaseNetworkException e) {
                         erro = "Sem conexão com a internet!";
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         erro = "Erro ao cadastrar o usuário!";
                     }
                     txt_mensagemErro.setText(erro);
@@ -116,13 +121,13 @@ public class Form_Cadastro extends AppCompatActivity {
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == Activity.RESULT_OK){
+                    if (result.getResultCode() == Activity.RESULT_OK) {
                         Intent data = result.getData();
                         mSelecionarUri = data.getData();
 
                         try {
                             fotoUsuario.setImageURI(mSelecionarUri);
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
 
@@ -138,7 +143,7 @@ public class Form_Cadastro extends AppCompatActivity {
 
     }
 
-    private void SalvarDadosUsuario(){
+    private void SalvarDadosUsuario() {
         String nomeArquivo = UUID.randomUUID().toString();
 
         final StorageReference reference = FirebaseStorage.getInstance().getReference("/imagens/" + nomeArquivo);
@@ -149,7 +154,33 @@ public class Form_Cadastro extends AppCompatActivity {
                         reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
-                                Log.i("url_img", uri.toString());
+
+                                String foto = uri.toString();
+
+                                // iniciar banco de dados - Firestore
+                                String nome = edit_nome.getText().toString();
+                                FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+                                Map<String, Object> usuarios = new HashMap<>();
+                                usuarios.put("nome", nome);
+                                usuarios.put("foto", foto);
+
+                                usuarioID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+                                DocumentReference documentReference = db.collection("Usuarios").document(usuarioID);
+                                documentReference.set(usuarios).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        Log.i("db", "Sucesso ao salvar os dados");
+
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.i("db_erro", "Erro ao salvar os dados" + e.toString());
+
+                                    }
+                                });
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
@@ -166,7 +197,8 @@ public class Form_Cadastro extends AppCompatActivity {
                     }
                 });
     }
-    public void iniciarComponentes(){
+
+    public void iniciarComponentes() {
         fotoUsuario = findViewById(R.id.fotoUsuario);
         bt_selecionarFoto = findViewById(R.id.bt_selecionarFoto);
         bt_cadastrar = findViewById(R.id.bt_cadastrar);
@@ -188,10 +220,10 @@ public class Form_Cadastro extends AppCompatActivity {
             String email = edit_email.getText().toString();
             String senha = edit_senha.getText().toString();
 
-            if (!nome.isEmpty() && !email.isEmpty() && !senha.isEmpty()){
+            if (!nome.isEmpty() && !email.isEmpty() && !senha.isEmpty()) {
                 bt_cadastrar.setEnabled(true);
                 bt_cadastrar.setBackgroundColor(getResources().getColor(R.color.dark_red));
-            }else{
+            } else {
                 bt_cadastrar.setEnabled(false);
                 bt_cadastrar.setBackgroundColor(getResources().getColor(R.color.gray));
             }
